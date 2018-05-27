@@ -4,14 +4,16 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Kolorowator Grafów — by ceski23" Height="107" Width="360" ResizeMode="NoResize">
+        Title="Kolorowator Grafów — by ceski23" Height="380" Width="250" ResizeMode="NoResize">
     <Grid>
         <StackPanel Orientation="Vertical">
-            <StackPanel Orientation="Horizontal" Height="50">
-                <Button Name="VerticesButton" Click="VerticesButton_OnClick" Margin="10" Width="150">Generuj wierzchołki</Button>
-                <Button Name="EdgesButton" Click="EdgesButton_OnClick" Margin="10" Width="150">Generuj krawędzie</Button>
-            </StackPanel>
-            <ProgressBar Name="ProgressBar" Height="20"></ProgressBar>
+            <Image Name="GraphImage" Width="220" Height="180" Margin="10" Stretch="Uniform" />
+            <Button Name="LoadGraphButton" Click="LoadGraphButton_OnClick" Height="30" Margin="10,0,10,10">Wybierz plik z grafem...</Button>
+                
+            <Line X1="10" X2="225" Y1="0" Y2="0" Stroke="Black" Margin="0,5,0,5" StrokeThickness="0.5" />
+                
+            <Button IsEnabled="False" Name="VerticesButton" Click="VerticesButton_OnClick" Margin="10" Height="30">Generuj kolorowania wierzchołków</Button>
+            <Button IsEnabled="False" Name="EdgesButton" Click="EdgesButton_OnClick" Margin="10,0,10,10" Height="30">Generuj kolorowania krawędzi</Button>
         </StackPanel>
     </Grid>
 </Window>

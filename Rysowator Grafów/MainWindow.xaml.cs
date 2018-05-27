@@ -1,36 +1,26 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using Svg;
+using Color = System.Drawing.Color;
 
 namespace Rysowator_Grafów
 {
     public partial class MainWindow
     {
-        private readonly SvgDocument _edgesSvg;
-        private readonly SvgDocument _verticesSvg;
+        private SvgDocument _edgesSvg;
+        private SvgDocument _verticesSvg;
         
         public MainWindow()
         {
             InitializeComponent();
-            
-            
-            var fileDialog = new OpenFileDialog
-            {
-                Filter = "Obrazek z grafem|*.svg"
-            };
-
-            if (fileDialog.ShowDialog() == true)
-            {
-                _edgesSvg = SvgDocument.Open(fileDialog.FileName);
-                _verticesSvg = SvgDocument.Open(fileDialog.FileName);
-            }
-            else Close();
         }
 
         
@@ -93,10 +83,6 @@ namespace Rysowator_Grafów
                         var bitmap = ColorizeVertices(_verticesSvg, colorings[i]).Draw();
                         bitmap.Save($"{dialog.SelectedPath}/graph_vertices_{i+1}.png", ImageFormat.Png);
                     });
-                    
-                    var progress = (i + 1) * (colorings.Count / 100);
-
-                    ProgressBar.Value = progress;
                 }
             }
             
@@ -121,15 +107,33 @@ namespace Rysowator_Grafów
                         var bitmap = ColorizeEdges(_edgesSvg, colorings[i]).Draw();
                         bitmap.Save($"{dialog.SelectedPath}/graph_edges_{i+1}.png", ImageFormat.Png);
                     });
-                    
-                    var progress = (i + 1) * (colorings.Count / 100);
-
-                    ProgressBar.Value = progress;
                 }
             }
             
             VerticesButton.IsEnabled = true;
             EdgesButton.IsEnabled = true;
+        }
+
+        private void LoadGraphButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            var fileDialog = new OpenFileDialog
+            {
+                Filter = "Obrazek z grafem|*.svg"
+            };
+
+            if (fileDialog.ShowDialog() == true)
+            {
+                _edgesSvg = SvgDocument.Open(fileDialog.FileName);
+                _verticesSvg = SvgDocument.Open(fileDialog.FileName);
+
+                VerticesButton.IsEnabled = true;
+                EdgesButton.IsEnabled = true;
+
+                var tmpFilePath = Path.GetTempFileName();
+                _edgesSvg.Draw().Save(tmpFilePath, ImageFormat.Png);
+
+                GraphImage.Source = new BitmapImage(new Uri(tmpFilePath));
+            }
         }
 
 
@@ -147,6 +151,17 @@ namespace Rysowator_Grafów
             };
 
             return colors[n];
+        }
+
+
+
+        private static BitmapSource BitmapToBitmapSource(Bitmap source)
+        {
+            return System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
+                source.GetHbitmap(),
+                IntPtr.Zero,
+                Int32Rect.Empty,
+                BitmapSizeOptions.FromEmptyOptions());
         }
     }
 }
